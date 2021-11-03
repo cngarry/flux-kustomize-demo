@@ -1,0 +1,46 @@
+# traefik-dashboard 密码
+apiVersion: v1
+kind: Secret
+metadata:
+  name: authsecret-ops
+  namespace: traefik-system
+type: Opaque
+stringData:
+  users: ops:$apr1$CwNC3OTB$I6dEO5336PTzfMgRQqzj41
+  # htpasswd -nb ops ops.123
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: auth-ops
+  namespace: traefik-system
+spec:
+  basicAuth:
+    secret: authsecret-ops
+---
+# ingress route for traefik-dashboard
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingressroute-traefik-dashboard
+  namespace: traefik-system
+spec:
+  entryPoints:
+    - https
+  routes:
+  - match: Host(`tfk-ui.garryops.com`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+    kind: Rule
+    services:
+    - name: traefik-v2-mgmt
+      port: 8080
+    middlewares:
+    - name: auth-ops
+  - match: Host(`tfk-ui.garryops.com`) && PathPrefix(`/metrics`)
+    kind: Rule
+    services:
+    - name: traefik-v2-mgmt
+      port: 8080
+    middlewares:
+    - name: auth-ops
+  tls:
+    secretName: tls-traefik-ingress

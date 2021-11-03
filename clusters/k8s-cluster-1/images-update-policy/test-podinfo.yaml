@@ -1,0 +1,24 @@
+# # # # # # # # # # # # # # # #
+# ns-test-podinfo #
+# # # # # # # # # # # # # # # #
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageRepository
+metadata:
+  name: ns-test-podinfo
+  namespace: flux-system
+spec:
+  image: ghcr.io/stefanprodan/podinfo:6.0.0
+  interval: 10m0s
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImagePolicy
+metadata:
+  name: ns-test-podinfo
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: ns-test-podinfo
+  policy:
+    semver:
+      range: 6.0.x

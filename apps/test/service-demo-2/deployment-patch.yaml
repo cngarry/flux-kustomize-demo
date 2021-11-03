@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-demo-2
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: service-demo-2
+        image: reg.garrytest.com/demo/service-demo-2:tag # {"$imagepolicy": "flux-system:ns-test-service-demo-2"}
+        envFrom:
+        - configMapRef:
+            name: config-service-demo-2-autocd
+        - configMapRef:
+            name: config-base-test
+      imagePullSecrets:
+      - name: regkey

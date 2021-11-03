@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - traefik-crd.yaml
+  - traefik-rbac.yaml
+  - traefik-config.yaml
+  - traefik-daemonset-hostnetwork.yaml
+  - tls-traefik-ingress.yaml
+  - ingressroute-traefik-mgmt-http.yaml

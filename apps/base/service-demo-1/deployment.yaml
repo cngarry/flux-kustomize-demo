@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-demo-1
+  labels:
+    app: service-demo-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-demo-1
+  template:
+    metadata:
+      labels:
+        app: service-demo-1
+    spec:
+      containers:
+      - name: service-demo-1
+        image: reg.garrytest.com/demo/service-demo-1
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: config-service-demo-1
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 35
+          periodSeconds: 20
+          successThreshold: 1
+          timeoutSeconds: 5
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 35
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1024Mi
+          requests:
+            cpu: 200m
+            memory: 512Mi
+        #lifecycle:
+        #  preStop:
+        #    exec:
+        #      command: ["/bin/bash", "-c", "sleep 15"]

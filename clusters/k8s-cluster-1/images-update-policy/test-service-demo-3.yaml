@@ -1,0 +1,29 @@
+# # # # # # # # # # # # # # # #
+# ns-test-service-demo-3 #
+# # # # # # # # # # # # # # # #
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageRepository
+metadata:
+  name: ns-test-service-demo-3
+  namespace: flux-system
+spec:
+  image: reg.garrytest.com/demo/service-demo-3
+  interval: 2m0s
+  secretRef:
+    name: regkey
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImagePolicy
+metadata:
+  name: ns-test-service-demo-3
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: ns-test-service-demo-3
+  filterTags:
+    pattern: '^test-[a-zA-Z0-9.]+-(?P<ts>[0-9]+)'
+    extract: '$ts'
+  policy:
+    numerical:
+      order: asc

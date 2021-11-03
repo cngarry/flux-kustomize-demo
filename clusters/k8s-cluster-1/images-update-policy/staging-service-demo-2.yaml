@@ -1,0 +1,29 @@
+# # # # # # # # # # # # # # # #
+# ns-staging-service-demo-2 #
+# # # # # # # # # # # # # # # #
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageRepository
+metadata:
+  name: ns-staging-service-demo-2
+  namespace: flux-system
+spec:
+  image: reg.garrytest.com/demo/service-demo-2
+  interval: 2m0s
+  secretRef:
+    name: regkey
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImagePolicy
+metadata:
+  name: ns-staging-service-demo-2
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: ns-staging-service-demo-2
+  filterTags:
+    pattern: '^staging-[a-zA-Z0-9.]+-(?P<ts>[0-9]+)'
+    extract: '$ts'
+  policy:
+    numerical:
+      order: asc

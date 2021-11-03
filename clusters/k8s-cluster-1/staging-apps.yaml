@@ -1,0 +1,56 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+kind: Kustomization
+metadata:
+  name: apps-ns-staging
+  namespace: flux-system
+spec:
+  interval: 2m0s
+  dependsOn:
+    - name: infrastructure
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/staging
+  prune: true #启用垃圾回收策略，当资源文件被注释或删除，会自动清除k8s对应资源.
+  validation: client
+---
+# 更新定义自动扫描镜像仓库并更新最新镜像并提交git记录，以触发更新部署
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: image-update-apps-ns-staging
+  namespace: flux-system
+spec:
+  git:
+    checkout:
+      ref:
+        branch: master
+    commit:
+      author:
+        email: fluxcdbot@noreply.garrytest.com
+        name: fluxcdbot
+      messageTemplate: |
+        Automated image update to {{range .Updated.Images}}{{println .}}{{end}}
+        Files:
+        {{ range $filename, $_ := .Updated.Files -}}
+        - {{ $filename }}
+        {{ end -}}
+
+        Objects:
+        {{ range $resource, $_ := .Updated.Objects -}}
+        - {{ $resource.Kind }} {{ $resource.Name }}
+        {{ end -}}
+
+        Images:
+        {{ range .Updated.Images -}}
+        - {{.}}
+        {{ end -}}
+    push:
+      branch: master
+  interval: 1m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  update:
+    path: ./apps/staging
+    strategy: Setters

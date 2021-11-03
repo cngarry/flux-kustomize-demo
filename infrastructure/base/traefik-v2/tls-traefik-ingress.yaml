@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tls-traefik-ingress
+  namespace: traefik-system
+type: kubernetes.io/tls
+data:
+  # cat tls.crt|base64
+  tls.crt: xxxxxxxxxxxxxxxxxxx=====
+  tls.key: xxxxxxxxxxxxxxx=========

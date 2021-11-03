@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podinfo
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: podinfod
+        image: ghcr.io/stefanprodan/podinfo:6.0.3 # {"$imagepolicy": "flux-system:ns-test-podinfo"}
+        envFrom:
+        - configMapRef:
+            name: config-podinfo-autocd
+        - configMapRef:
+            name: config-base-test

@@ -1,0 +1,13 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingressroute-podinfo
+spec:
+  entryPoints:
+    - http
+  routes:
+  - match: Host(`test-podinfo.garrytest.com`)
+    kind: Rule
+    services:
+    - name: podinfo-autocd
+      port: 8080
